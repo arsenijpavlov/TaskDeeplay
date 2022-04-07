@@ -76,6 +76,6 @@ public class main {
     private static void sort(List<Integer> sub, boolean b) {
         int pl = 0, pr = sub.size();
         int x = sub.get(sub.size()/2);
-        
+
     }
 }
