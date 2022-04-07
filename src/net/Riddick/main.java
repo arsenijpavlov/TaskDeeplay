@@ -1,9 +1,6 @@
 package net.Riddick;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -12,7 +9,7 @@ public class main {
 
     public static void main(String[] args) {
         System.out.print("Выбор задачи (1-4): ");
-        switch (scanner.nextInt()){
+        switch (scanner.nextInt()) {
             case 1:
                 task1();
                 break;
@@ -32,36 +29,42 @@ public class main {
 
     private static void task1() {
         System.out.print("Количество элементов в массиве: ");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         int N = scanner.nextInt();
 
         //заполнение массива случайными значениями и вывод на экран
-        int[] arr = new int[N];
+        ArrayList<Integer> arr = new ArrayList<>();
         Random random = new Random();
-        for(int i : arr) {
-            arr[i] = random.nextInt() % 100 - 50;
-            System.out.print(arr[i] + " ");
-        }
-        System.out.println();
+        for (int i = 0; i < N; i++)
+            arr.add(random.nextInt(10));
+        System.out.println("Вход: " + arr);
 
         //упорядочивание
-        //нечётные
-        List<Integer> sub1 = null;
-        for(int i:arr){
-            if((arr[i]&1)==1)
-                sub1.add(arr[i]);
-            //сортировка
-            sort(sub1, true);
+        ArrayList<Integer> sub1 = new ArrayList<>();
+        ArrayList<Integer> sub2 = new ArrayList<>();
+        int l = 0;
+        for (int i = 0; i < N; i++) {
+            if (arr.get(i) == 0)
+                l++;
+            else if ((arr.get(i) & 1) == 1)
+                sub1.add(arr.get(i));
+            else
+                sub2.add(arr.get(i));
         }
-        //нули
-        for(int i:arr){
+        //сортировка
+        sortABC(sub1);
+        sortCBA(sub2);
 
-        }
-        //чётные
-        for(int i:arr){
+        //заполнение исходного
+        int i = 0;
+        int f = l;
+        for (; i < sub1.size(); i++)
+            arr.set(i, sub1.get(i));
+        for (; l > 0; l--, i++)
+            arr.set(i, 0);
+        for (; i < arr.size(); i++)
+            arr.set(i, sub2.get(i - f - sub1.size()));
 
-        }
-
+        System.out.println("Выход: " + arr);
     }
 
     private static void task2() {
@@ -73,9 +76,37 @@ public class main {
     private static void task4() {
     }
 
-    private static void sort(List<Integer> sub, boolean b) {
-        int pl = 0, pr = sub.size();
-        int x = sub.get(sub.size()/2);
+    private static void sortABC(ArrayList<Integer> array) {
+        //System.out.println("Before sortABC: " + array);
+        int i = 0, j = 1;
+        while(i < array.size() - 1) {
+            if (array.get(i) > array.get(i + 1)) {
+                array.set(i, array.get(i) + array.get(i + 1));
+                array.set(i + 1, array.get(i) - array.get(i + 1));
+                array.set(i, array.get(i) - array.get(i + 1));
+                i--;
+                if (i == -1)
+                    i = j++;
+            } else
+                i = j++;
+        }
+        //System.out.println("Post sortABC: " + array);
+    }
 
+    private static void sortCBA(ArrayList<Integer> array) {
+        //System.out.println("Before sortCBA: " + array);
+        int i = 0, j = 1;
+        while(i < array.size() - 1) {
+            if (array.get(i) < array.get(i + 1)) {
+                array.set(i, array.get(i) + array.get(i + 1));
+                array.set(i + 1, array.get(i) - array.get(i + 1));
+                array.set(i, array.get(i) - array.get(i + 1));
+                i--;
+                if (i == -1)
+                    i = j++;
+            } else
+                i = j++;
+        }
+        //System.out.println("Post sortCBA: " + array);
     }
 }
