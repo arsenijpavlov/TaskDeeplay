@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 public class main {
     static Scanner scanner = new Scanner(System.in);
+    static int N = 10;
 
     public static void main(String[] args) {
         System.out.print("Выбор задачи (1-4): ");
@@ -27,22 +28,20 @@ public class main {
         }
     }
 
+    /**
+    * 1. Заполнить массив случайными целыми числами. Вывести массив на экран. Переупорядочить в этом массиве
+    *  элементы следующим образом: сначала по не убыванию нечетные числа, потом нули, потом прочие числа по
+    * не возрастанию. Вывести массив на экран.
+     */
     private static void task1() {
-        System.out.print("Количество элементов в массиве: ");
-        int N = scanner.nextInt();
-
-        //заполнение массива случайными значениями и вывод на экран
-        ArrayList<Integer> arr = new ArrayList<>();
-        Random random = new Random();
-        for (int i = 0; i < N; i++)
-            arr.add(random.nextInt(10));
-        System.out.println("Вход: " + arr);
+        System.out.println("Задача 1:");
+        ArrayList<Integer> arr = getArray(N);
 
         //упорядочивание
         ArrayList<Integer> sub1 = new ArrayList<>();
         ArrayList<Integer> sub2 = new ArrayList<>();
         int l = 0;
-        for (int i = 0; i < N; i++) {
+        for (int i = 0; i < arr.size(); i++) {
             if (arr.get(i) == 0)
                 l++;
             else if ((arr.get(i) & 1) == 1)
@@ -67,7 +66,40 @@ public class main {
         System.out.println("Выход: " + arr);
     }
 
+    /**
+    * 2. Найти в массиве наиболее часто встречающееся число (числа, если таких несколько),
+    * вывести на экран исходные данные и результаты.
+     */
     private static void task2() {
+        System.out.println("Задача 2:");
+        ArrayList<Integer> arr = getArray(N);
+
+        //подсчёт вхождений уникальных элементов
+        int[][] counter = new int[arr.size()][2];
+        int j = 0;
+        for (int i = 0; i < arr.size(); i++)
+            if (!isUnique(counter, arr.get(i)))
+                counter[getIndex(counter, arr.get(i))][1] += 1;
+            else {
+                counter[j][0] = arr.get(i);
+                counter[j++][1] = 1;
+            }
+
+        //поиск максимального
+        int max = counter[0][1];
+        for (int i = 1; i < counter.length; i++)
+            if (counter[i][1] > max)
+                max = counter[i][1];
+
+        //вывод максимальных на экран
+        System.out.print("Самые частые вхождения: ");
+        for (int i = 0; i < counter.length; i++) {
+            if (counter[i][1] == max) {
+                System.out.print(counter[i][0] + " (" + counter[i][1] + " раза)");
+                if (i + 1 < counter.length)
+                    System.out.print("\t");
+            }
+        }
     }
 
     private static void task3() {
@@ -76,6 +108,22 @@ public class main {
     private static void task4() {
     }
 
+    /**
+    * Функция заполнения массива случайными элементами
+     */
+    private static ArrayList<Integer> getArray(int N) {
+        //заполнение массива случайными значениями и вывод на экран
+        ArrayList<Integer> arr = new ArrayList<>();
+        Random random = new Random();
+        for (int i = 0; i < N; i++)
+            arr.add(random.nextInt(10));
+        System.out.println("Вход: " + arr);
+        return arr;
+    }
+
+    /**
+     * Функция сортировки числового массива 'array' по возрастанию
+     */
     private static void sortABC(ArrayList<Integer> array) {
         //System.out.println("Before sortABC: " + array);
         int i = 0, j = 1;
@@ -93,6 +141,9 @@ public class main {
         //System.out.println("Post sortABC: " + array);
     }
 
+    /**
+     * Функция сортировки числового массива 'array' по убыванию
+     */
     private static void sortCBA(ArrayList<Integer> array) {
         //System.out.println("Before sortCBA: " + array);
         int i = 0, j = 1;
@@ -108,5 +159,26 @@ public class main {
                 i = j++;
         }
         //System.out.println("Post sortCBA: " + array);
+    }
+
+    /**
+     * Функция для поиска элемента 'x' в числовом массиве 'arr'
+     */
+    private static boolean isUnique(int[][] arr, int x) {
+        for(int i = 0; i < arr.length; i++)
+            if(arr[i][0] == x)
+                return false;
+        return true;
+    }
+
+    /**
+    * Функция получения индекса уникального элемента 'x' в массиве 'arr'
+     */
+    private static int getIndex(int[][] arr, int x) {
+        for(int i = 0; i < arr.length; i++){
+            if(arr[i][0] == x)
+                return i;
+        }
+        return -1;
     }
 }
