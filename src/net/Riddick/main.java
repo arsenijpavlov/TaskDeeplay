@@ -116,27 +116,41 @@ public class main {
      * Допустимо применить метод Монте-Карло.
      */
     private static void task3() {
-        ArrayList<Integer> player1 = getArray(3,1,6, "Игрок 1: ");
-        ArrayList<Integer> player2 = getArray(3,1,6, "Игрок 2: ");
-        //ArrayList<Integer> testPlayer1 = new ArrayList<>(Arrays.asList(new Integer[]{1,2,3}));
-        //ArrayList<Integer> testPlayer2 = new ArrayList<>(Arrays.asList(new Integer[]{2,3,1}));
-        //System.out.println("Игрок1: "+testPlayer1);
-        //System.out.println("Игрок2: "+testPlayer2);
-
-        //ArrayList<Integer> testSim = new ArrayList<>(Arrays.asList(new Integer[]{2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1}));
-        //System.out.println("Симуляция: "+testSim);
-        //System.out.println("Score1: " + getScore(testPlayer1,testSim));
-        //System.out.println("Score2: " + getScore(testPlayer2,testSim));
+        ArrayList<Integer> player1 = getArray(3, 1, 6, "Игрок 1: ");
+        ArrayList<Integer> player2 = getArray(3, 1, 6, "Игрок 2: ");
 
         ArrayList<Integer> sim1 = getArray(10,1,6, "Симуляция 1: ");
         ArrayList<Integer> sim2 = getArray(50,1,6, "Симуляция 2: ");
         ArrayList<Integer> sim3 = getArray(100,1,6, "Симуляция 3: ");
 
-        System.out.println("Симуляция 1:\nИгрок 1: " + getScore(player1, sim1) +"\nИгрок 2: " + getScore(player2, sim1));
-        System.out.println("Симуляция 2:\nИгрок 1: " + getScore(player1, sim2) +"\nИгрок 2: " + getScore(player2, sim2));
-        System.out.println("Симуляция 3:\nИгрок 1: " + getScore(player1, sim3) +"\nИгрок 2: " + getScore(player2, sim3));
+        System.out.println("Симуляция 1 (10 элементов):\nИгрок 1: " + getScore(player1, sim1) +"\nИгрок 2: " + getScore(player2, sim1));
+        System.out.println("Симуляция 2 (50 элементов):\nИгрок 1: " + getScore(player1, sim2) +"\nИгрок 2: " + getScore(player2, sim2));
+        System.out.println("Симуляция 3 (100 элементов):\nИгрок 1: " + getScore(player1, sim3) +"\nИгрок 2: " + getScore(player2, sim3));
 
         //подсчёт вероятности выигрыша
+        System.out.println("\nСогласно теории вероятностей, если есть всего 3 варианта событий,\n" +
+                "без влияния внешних факторов у них примерно равные значения - 33%\n" +
+                "Это подтверждается следующим:");
+
+        int NN = 10000000;
+        int[] scores = {0, 0, 0};
+        int score1, score2;
+        for (int i = 0; i < NN; i++) {
+            ArrayList<Integer> sim = getArray(100, 1, 6);
+            score1 = getScore(player1, sim);
+            score2 = getScore(player2, sim);
+            if (score1 > score2)
+                scores[0]++;
+            else if (score2 > score1)
+                scores[1]++;
+            else
+                scores[2]++;
+        }
+        System.out.printf("\tВыборка из %d симуляций:\n", NN);
+        System.out.println("\tКоличество побед (1, 2, ничья): " + scores[0] + ", " + scores[1] + ", " + scores[2]);
+        System.out.println("\t\tP1 = " + (float)scores[0]/NN);
+        System.out.println("\t\tP2 = " + (float)scores[1]/NN);
+        System.out.println("\t\tPdraw = " + (float)scores[2]/NN);
     }
 
     private static void task4() {
@@ -151,12 +165,24 @@ public class main {
      * @return Массив случайных чисел
      */
     private static ArrayList<Integer> getArray(int N, int MIN, int MAX, String msg) {
+        ArrayList<Integer> arr = getArray(N,MIN,MAX);
+        System.out.println(msg + arr);
+        return arr;
+    }
+
+    /**
+     * Функция заполнения массива случайными элементами
+     * @param N Количество элементов
+     * @param MIN Минимальное значение элементов
+     * @param MAX Максимальное значение элементов
+     * @return Массив случайных чисел
+     */
+    private static ArrayList<Integer> getArray(int N, int MIN, int MAX) {
         //заполнение массива случайными значениями и вывод на экран
         ArrayList<Integer> arr = new ArrayList<>();
         Random random = new Random();
         for (int i = 0; i < N; i++)
             arr.add(random.nextInt(MAX - MIN) + MIN);
-        System.out.println(msg + arr);
         return arr;
     }
 
