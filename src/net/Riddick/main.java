@@ -1,8 +1,6 @@
 package net.Riddick;
 
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class main {
     static Scanner scanner = new Scanner(System.in);
@@ -153,7 +151,53 @@ public class main {
         System.out.println("\t\tPdraw = " + (float)scores[2]/NN);
     }
 
+    /**
+    * 4. Написать программу распределения данного набора целых чисел (возможны повторяющиеся числа) на заданное число
+     * групп так, чтобы были равными суммы чисел, входящих в каждую группу. Если это сделать невозможно, то программа
+     * определяет этот факт. Вывести на экран исходные данные и результаты. Задачу необходимо решить точно: не
+     * эвристический, а точный алгоритм.
+     * Допустимо использовать полный перебор всех вариантов распределения чисел по группам.
+     */
     private static void task4() {
+        ArrayList<Integer> arr = getArray((new Random()).nextInt(20 - 1) + 1,1,20,"Исходный массив: ");
+        System.out.print("На сколько групп разделить? ");
+        int count = scanner.nextInt();
+
+        int sum = 0;
+        for(int i : arr)
+            sum += i;
+        int resultSum = sum / count;
+        if(sum % count != 0){
+            System.out.println("Невозможно разделить (1. сумма всех элементов не делится без остатка).");
+        }
+        else {
+            boolean flag = true;
+            //проходим по количеству требуемых сумм
+            for (int i = 0; i < count; i++) {
+                //собираем сумму, убираем из массива использованные элементы
+                ArrayList<Integer> list = getNewListForTask(arr, resultSum, 0);
+                if (list.get(0) == -1) {
+                    Collections.reverse(arr);
+                    list = getNewListForTask(arr, resultSum, 0);
+                    if(list.get(0)==-1) {
+                        System.out.println("Невозможно разделить (2. нельзя составить нужную комбинацию).");
+                        flag = false;
+                        break;
+                    }
+                }
+                //удаляем задействованные числа из основеного массива
+                for (int j : list)
+                    for (int k = 0; k < arr.size(); k++)
+                        if (j == arr.get(k)) {
+                            arr.remove(k);
+                            break;//чтоб не удаляло дубликаты
+                        }
+
+                System.out.println("\n" + list);
+            }
+            if (!flag)
+                System.out.println("\tНезадействованные числа: " + arr);
+        }
     }
 
     /**
@@ -281,5 +325,44 @@ public class main {
         }
 
         return score;
+    }
+
+    /**
+     * Функция рекурсивного сбора суммы
+     * @param array входящий массив элементов
+     * @param res искомая сумма
+     * @param lvl уровень вложенности (полезен для отладки)
+     * @return массив с требуемой суммой либо -1
+     */
+    private static ArrayList<Integer> getNewListForTask(ArrayList<Integer> array, int res, int lvl){
+        ArrayList<Integer> list = new ArrayList<>();
+        boolean flag = false;//если не найден ответ, закончить обработку
+        int i = 0;
+        int s;
+        while(i < array.size()) {
+            int result = res - array.get(i);
+            if (result > 0) {
+                ArrayList<Integer> newList = (ArrayList<Integer>) array.clone();
+                newList.remove(i);
+                ArrayList<Integer> funcResult = getNewListForTask(newList, result, lvl + 1);
+                if (funcResult.get(0) != -1) {
+                    list.add(array.get(i));
+                    list.addAll(funcResult);
+                    flag = true;
+                    break;
+                }
+            } else {
+                if (result == 0) {
+                    list.add(array.get(i));
+                    flag = true;
+                }
+                break;
+            }
+            i++;
+        }
+        if(flag)
+            return list;
+        else
+            return new ArrayList<Integer>(Arrays.asList(new Integer[]{-1}));
     }
 }
